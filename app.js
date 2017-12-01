@@ -166,7 +166,13 @@ var UIController = (function() {
             document.querySelector(DOMstrings.budgetLabel).textContent = obj.budget;
             document.querySelector(DOMstrings.incomeLabel).textContent = obj.totalInc;
             document.querySelector(DOMstrings.expensesLabel).textContent = obj.totalExp;
-            document.querySelector(DOMstrings.percentageLabel).textContent = obj.percentage;
+        
+            if (obj.percentage > 0) {
+                document.querySelector(DOMstrings.percentageLabel).textContent = obj.percentage + '%';  
+            } else {
+                document.querySelector(DOMstrings.percentageLabel).textContent = '---';                
+            }
+        
         },
 
         // expose private to public so others can access them
@@ -235,6 +241,12 @@ var controller = (function(budgetCtrl, UICtrl) {
         // As soon as application start run this:
         init: function() {
             console.log('Application has started.');
+            UICtrl.displayBudget({
+                budget: 0,
+                totalInc: 0,
+                totalExp: 0,
+                percentage: -1
+            });            
             setupEventListeners();
         }
     }
