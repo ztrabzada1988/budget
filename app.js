@@ -16,15 +16,7 @@ var budgetController = (function() {
         this.value = value;
     };
 
-    var calculateTotal = function(type) {
-        var sum = 0;
-        data.allItems[type].forEach(function(cur) {
-            sum += cur.value;
-        });
-        data.totals[type] = sum;
-    };
-
-    // our global data structure
+      // our global data structure
     var data = {
         allItems: {
             exp: [],
@@ -38,6 +30,15 @@ var budgetController = (function() {
         percentage: -1 // -1 is used if nothing exists at the moment
 
     };
+
+    var calculateTotal = function(type) { // type is either income or expense 
+        var sum = 0;
+        data.allItems[type].forEach(function(cur) {
+            sum += cur.value;
+        });
+        data.totals[type] = sum;
+    };
+
 
     return {
         addItem: function(type, des, val) {
@@ -90,7 +91,7 @@ var budgetController = (function() {
                 percentage: data.percentage
             };
         },
-
+        // test the function in console to make sure its returning the proper data
         testing: function() {
             console.log(data);
         }
@@ -102,14 +103,18 @@ var budgetController = (function() {
 
 // UI CONTROLLER
 var UIController = (function() {
-    
+    // to clean up code and avoid putting class name strings everywhere
     var DOMstrings = {
         inputType: '.add__type',
         inputDescription: '.add__description',
         inputValue: '.add__value',
         inputBtn: '.add__btn',
         incomeContainer: '.income__list',
-        expensesContainer: '.expenses__list' 
+        expensesContainer: '.expenses__list',
+        budgetLabel: '.budget__value',
+        incomeLabel: '.budget__income--value',
+        expensesLabel: '.budget__expenses--value',
+        percentageLabel: '.budget__expenses--percentage'
     }
 
     return {
@@ -129,7 +134,7 @@ var UIController = (function() {
                 element = DOMstrings.incomeContainer;
                 html = '<div class="item clearfix" id="income-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>'
             } else if (type === 'exp') {
-                element = DOMstrings.expesesContainer;   
+                element = DOMstrings.expensesContainer;   
                 html = '<div class="item clearfix" id="expense-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__percentage">21%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>'
             }
 
@@ -155,6 +160,13 @@ var UIController = (function() {
             // Put focus/pointer (using focus method) at the description input field as soon as its cleared
             fieldsArr[0].focus();
 
+        },
+
+        displayBudget: function(obj) {
+            document.querySelector(DOMstrings.budgetLabel).textContent = obj.budget;
+            document.querySelector(DOMstrings.incomeLabel).textContent = obj.totalInc;
+            document.querySelector(DOMstrings.expensesLabel).textContent = obj.totalExp;
+            document.querySelector(DOMstrings.percentageLabel).textContent = obj.percentage;
         },
 
         // expose private to public so others can access them
@@ -191,7 +203,7 @@ var controller = (function(budgetCtrl, UICtrl) {
         var budget = budgetCtrl.getBudget();
 
         // 3. Display the bduget on the UI 
-        console.log(budget);
+        UICtrl.displayBudget(budget);
     };
 
     var ctrlAddItem = function() {
